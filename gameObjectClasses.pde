@@ -10,7 +10,7 @@ private class gameObject {
     
   }
   
-  public void update(){
+  public void update(float dt){
     
   }
 }
@@ -20,39 +20,68 @@ public class ball extends gameObject  {
   
   //angle and speed
   float direction;
+  PVector velocity;
   float speed;
   
   //create ball and set initial direction
   public ball(){
-    x = 150;
-    y = 100;
+    x = width/2;
+    y = height/2;
     
-    speed = 2;
-    direction = 1;
-  }
-  
-  public void pitchBall() {
+    speed = 300;
+
     direction = random(360);
-    speed = 1;
+    velocity = new PVector(cos(direction), -sin(direction));
   }
   
-  public boolean collision(bat test){
+  public void pitchBall() {    
+    x = width/2;
+    y = height/2;
+
+    direction = random(360);
+    speed = 300;
+
+  }
+  
+  public boolean collision(){
+    
+    if (y <= 0 || y >= 200) {
+      velocity.y = -velocity.y;
+      return true;
+    } 
+    if (x <= 0 || x >= 300) {
+      //GOAL!!!
+      //velocity.x = -velocity.x; 
+      //speed += 100;
+      
+      pitchBall();
+      
+      return true;
+    } 
     return false;
   };
   
-  public void update() {
+  public void update(float dt) {
+    collision();
+    
+    x += velocity.x*speed*dt;
+    y += velocity.y*speed*dt;
+    
+    //x += 60*dt;
+    
    //non final implementation, no collison detection
-   if (x < 25)
-     direction = 1;
-   else if (x > 300-25)
-     direction = -1;
-   x += speed*direction; 
+   //if (x < 25)
+   // direction = 1;
+   //else if (x > 300-25)
+   // direction = -1;
+   //x += speed*direction; 
   }
   
   public void draw() {
     strokeWeight(10);
     point(x, y);
     strokeWeight(0);
+    //text(degrees(direction%360), 100,100);
   }  
 }
 
@@ -76,7 +105,18 @@ public class bat extends gameObject{
     h = 60;
   }
   
-  public void update(){
+  public boolean collision(ball entity){
+    if (entity.x-10/2 < this.x+this.w/2 && 
+        entity.x+10/2 > this.x-this.w/2 &&
+        entity.y-10/2 < this.y+this.h/2 && 
+        entity.y+10/2 > this.y-this.h/2){
+    
+        return true;
+    }
+    return false;
+  }
+  
+  public void update(float dt){
     //y = currentController.input(new PVector (x, y));
   }
   
